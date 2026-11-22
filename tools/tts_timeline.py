@@ -17,15 +17,18 @@ SR = 48000
 SENT_GAP = 0.32   # pause between sentences inside a scene (s)
 SCENE_GAP = 0.95  # pause between scenes (s)
 VOICE = os.environ.get("VOICE", "Thiền Tâm Đức")
+CACHE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "out", "tts_cache")
 
 
 def parse(path):
     md = open(path, encoding="utf-8").read()
     scenes = []
-    for m in re.finditer(r"^## Cảnh (\d+) · (.+?)\n(.*?)(?=^## |^---)", md, re.M | re.S):
+    en = "/en/" in path.replace("\\", "/")
+    head, k_text, k_vo = ("Scene", "On-screen", "VO") if en else ("Cảnh", "Chữ", "Lời")
+    for m in re.finditer(rf"^## {head} (\d+) · (.+?)\n(.*?)(?=^## |^---)", md, re.M | re.S):
         body = m.group(3)
         get = lambda k: (re.search(rf"^- \*\*{k}\*\*: (.+)$", body, re.M) or [None, ""])[1].strip()
-        scenes.append(dict(id=int(m.group(1)), name=m.group(2).strip(), text=get("Chữ"), vo=get("Lời")))
+        scenes.append(dict(id=int(m.group(1)), name=m.group(2).strip(), text=get(k_text), vo=get(k_vo)))
     return scenes
 
 
@@ -44,19 +47,43 @@ def speech_span(wav, thr=0.02):
 def main():
     src, work = sys.argv[1], sys.argv[2]
     os.makedirs(work, exist_ok=True)
-    from vieneu import Vieneu
-    tts = Vieneu()
+    import hashlib
+    en = "/en/" in src.replace("\\", "/")
+    os.makedirs(CACHE, exist_ok=True)
+    engine = {}
+
+    def synth(text):
+        key = hashlib.sha1(f"{'en' if en else 'vi'}|{VOICE}|{text}".encode()).hexdigest()[:16]
+        f = os.path.join(CACHE, key + ".wav")
+        if os.path.exists(f):
+            a, _ = sf.read(f, dtype="float32")
+            return a
+        if en:
+            if "k" not in engine:
+                from kokoro_onnx import Kokoro
+                kd = os.environ["KOKORO_DIR"]
+                engine["k"] = Kokoro(os.path.join(kd, "kokoro-v1.0.onnx"), os.path.join(kd, "voices-v1.0.bin"))
+            v = os.environ.get("EN_VOICE", "am_michael")
+            a, sr = engine["k"].create(text, voice=v, speed=0.95, lang="en-us" if v[0] == "a" else "en-gb")
+        else:
+            if "v" not in engine:
+                from vieneu import Vieneu
+                engine["v"] = Vieneu()
+            a, sr = engine["v"].infer(text, voice=VOICE), 48000
+        a = np.asarray(a, dtype=np.float32).flatten()
+        if sr != SR:
+            import soxr
+            a = soxr.resample(a, sr, SR)
+        sf.write(f, a, SR)
+        return a
+
     scenes = parse(src)
     out, t = [], 0.0
     for sc in scenes:
         sc_start = t
         sents = []
         for s in sentences(sc["vo"]):
-            audio = np.asarray(tts.infer(s, voice=VOICE), dtype=np.float32).flatten()
-            sr = getattr(tts, "sample_rate", None) or SR
-            if sr != SR:
-                import soxr
-                audio = soxr.resample(audio, sr, SR)
+            audio = synth(s)
             a, b = speech_span(audio)
             audio = audio[max(0, a - int(0.03 * SR)): b + int(0.08 * SR)]
             dur = len(audio) / SR

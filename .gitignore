@@ -2,3 +2,4 @@ out/*_work/
 __pycache__/
 tools/motion/node_modules/
 out/*.mp4
+out/tts_cache/
