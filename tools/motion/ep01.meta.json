@@ -1,0 +1,8 @@
+{
+  "label": { "vi": "TẬP 01", "en": "EP 01" },
+  "keywords": {
+    "vi": ["Vi Diệu Pháp", "Vi Diệu Pháp Tập Yếu", "A-bi-đam-ma", "A-bi", "Đam-ma", "Pā-li", "Tam Tạng", "Kinh tạng", "Luật tạng", "Luận tạng", "giỏ Kinh", "giỏ Luật", "giỏ Luận", "tâm sân", "tâm tham", "tâm đại thiện", "Pháp thù thắng", "tám mươi chín", "A-nu-rút-đa", "Tịnh Sự", "Bên Trong Một Ý Nghĩ", "bản đồ"],
+    "en": ["Abhidhamma", "Dhamma", "Abhi", "Pali", "Three Baskets", "Higher Teaching", "aversion", "greed", "great wholesome", "eighty-nine", "Inside a Thought", "map"]
+  },
+  "thumb": { "t": 81.4, "big": "89", "main": { "vi": "LOẠI TÂM", "en": "KINDS OF MIND" }, "sub": { "vi": "Bạn đang ở loại nào?", "en": "Which one are you in?" } }
+}

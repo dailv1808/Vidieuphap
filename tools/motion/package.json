@@ -1,15 +1,10 @@
 {
   "name": "motion",
+  "private": true,
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "description": "3D motion-graphics renderer for the series",
   "dependencies": {
-    "three": "^0.169.0"
+    "playwright": "1.49.1",
+    "three": "0.169.0"
   }
 }
