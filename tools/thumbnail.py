@@ -51,9 +51,26 @@ def main():
     if a.big:
         d.text((540, y), a.big, font=title_big, fill=(255, 233, 180), anchor="mt", stroke_width=3, stroke_fill=(70, 35, 0))
         y += 380
-    d.text((540, y), a.main, font=title, fill=(255, 255, 255), anchor="mt", stroke_width=5, stroke_fill=(0, 0, 0))
+    # wrap the main text to the frame width (960 px), shrinking the font until it fits in 3 lines
+    size = title.size
+    while True:
+        f = font("PlayfairDisplay.ttf", size, 800)
+        words, lines, cur = a.main.split(), [], ""
+        for w in words:
+            tst = (cur + " " + w).strip()
+            if d.textlength(tst, font=f) <= 960 or not cur:
+                cur = tst
+            else:
+                lines.append(cur); cur = w
+        lines.append(cur)
+        if (len(lines) <= 3 and all(d.textlength(l, font=f) <= 960 for l in lines)) or size <= 60:
+            break
+        size -= 8
+    for ln in lines:
+        d.text((540, y), ln, font=f, fill=(255, 255, 255), anchor="mt", stroke_width=5, stroke_fill=(0, 0, 0))
+        y += int(size * 1.12)
     if a.sub:
-        d.text((540, y + 175), a.sub, font=sub, fill=(255, 190, 208), anchor="mt", stroke_width=4, stroke_fill=(0, 0, 0))
+        d.text((540, y + 30), a.sub, font=sub, fill=(255, 190, 208), anchor="mt", stroke_width=4, stroke_fill=(0, 0, 0))
     im.save(a.out, quality=92)
 
 
