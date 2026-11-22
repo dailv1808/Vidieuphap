@@ -3,16 +3,15 @@
 <script type="importmap">{"imports":{"three":"/tools/motion/node_modules/three/build/three.module.js","three/addons/":"/tools/motion/node_modules/three/examples/jsm/"}}</script>
 </head><body><canvas id="c"></canvas><div id="ov"></div>
 <script type="module">
-import { Engine, Overlay, CSS, setTheme } from './engine.js';
+import { Engine, Overlay, CSS } from './engine.js';
 const q = new URLSearchParams(location.search);
-setTheme(q.get('theme') || 'aurora');
 const ep = await import(`./${q.get('ep')}.js`);
 const tl = await (await fetch(q.get('tl'))).json();
 const style = document.createElement('style'); style.textContent = CSS + (ep.CSS_EP || ''); document.head.appendChild(style);
 await Promise.all([...[600, 700, 800, 900].map(w => document.fonts.load(`${w} 40px Montserrat`, 'ẮệĐ')),
   ...[700, 800, 900].map(w => document.fonts.load(`${w} 40px "Playfair Display"`, 'ẮệĐ'))]);
 const cfg = { series: q.get('series') || 'BÊN TRONG MỘT Ý NGHĨ', epLabel: q.get('label') || 'TẬP 01', keywords: JSON.parse(q.get('kw') || '[]'),
-  renderScale: +(q.get('scale') || 0.85), overlay: ep.overlay, hideHeadline: ep.hideHeadline, instantHeadline: ep.instantHeadline, lang: q.get('lang') || 'vi', transitions: ep.transitions };
+  renderScale: +(q.get('scale') || 0.85), overlay: ep.overlay, hideHeadline: ep.hideHeadline };
 const engine = new Engine(document.getElementById('c'), tl, cfg);
 ep.scenes.forEach(s => engine.add(s));
 const ov = new Overlay(document.getElementById('ov'), tl, cfg);

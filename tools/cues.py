@@ -11,38 +11,43 @@ import re
 import sys
 
 EPISODES = {
-    "ep01": {
-        # mood per scene: mystic | wonder | tense | warm
-        "moods": ["wonder", "tense", "mystic", "wonder", "mystic", "wonder", "mystic", "warm", "warm", "wonder", "mystic"],
+    "ep01": {  # v3 format (10 scenes, no map): chimes at the key reveals
+        "moods": ["mystic"] * 10,
+        "sfx": [
+            ("ding", ("word", 0, {"vi": "đếm", "en": "count"}, 0, 0.0), 1.0),
+            ("ding", ("word", 0, {"vi": "tám", "en": "eighty"}, 0, 0.0), 1.0),
+            ("ding", ("word", 3, {"vi": "diệu", "en": "abhidhamma"}, 0, -0.2), 1.0),
+            ("ding", ("sent", 5, 1, 0.3), 1.0), ("ding", ("sent", 5, 2, 0.3), 1.0), ("ding", ("sent", 5, 3, 0.3), 1.0),
+            ("ding", ("word", 8, {"vi": "bực", "en": "irritation"}, 0, 0.0), 1.0), ("ding", ("word", 8, {"vi": "thèm", "en": "craving"}, 1, 0.0), 1.0),
+            ("ding", ("word", 9, {"vi": "tháo", "en": "take"}, 0, 0.0), 1.0), ("ding", ("sent", 9, 3, 0.0), 1.0),
+        ],
+    },
+    "ep02": {
+        "moods": ["wonder", "mystic", "wonder", "mystic", "warm", "mystic", "warm", "warm", "mystic"],
         "sfx": [
             ("logo", ("scene", 0, 0.05), 0.9),
-            ("rustle", ("scene", 0, 1.0), 0.8),
-            ("boom", ("word", 0, {"vi": "đếm", "en": "count"}, 0, -0.05), 0.9),
-            ("shimmer", ("word", 0, {"vi": "đếm", "en": "count"}, 0, 0.1), 0.8),
-            ("ding", ("word", 0, {"vi": "tám", "en": "eighty"}, 0, 0.0), 1.0),
-            ("thunder", ("sent", 1, 1, 0.2), 0.9),
-            ("buzz", ("sent", 1, 2, 0.3), 0.9),
-            ("pop", ("sent", 1, 2, 0.55), 0.8), ("pop", ("sent", 1, 2, 1.0), 0.7), ("pop", ("sent", 1, 2, 1.45), 0.7),
-            ("door", ("sent", 1, 3, 0.25), 1.0), ("hum", ("sent", 1, 3, 0.4), 0.9),
-            ("shimmer", ("sent", 2, 2, 0.0), 0.7),
-            ("riser", ("scene", 3, 0.0), 0.7), ("boom", ("scene", 3, 2.55), 0.6),
-            ("ding", ("word", 3, {"vi": "diệu", "en": "abhidhamma"}, 0, -0.2), 0.9),
-            ("pop", ("word", 3, {"vi": "miến", "en": "myanmar"}, 0, 0), 0.6), ("pop", ("word", 3, {"vi": "thái", "en": "thailand"}, 0, 0), 0.6), ("pop", ("word", 3, {"vi": "việt", "en": "vietnam"}, 0, 0), 0.6),
-            ("whoosh", ("sent", 4, 2, 0.0), 0.15),
-            ("whoosh", ("sent", 4, 3, 0.0), 0.15),
-            ("shimmer", ("word", 4, {"vi": "x-quang", "en": "x-ray"}, 0, -0.2), 0.7),
-            ("scan", ("word", 4, {"vi": "chụp", "en": "scans"}, 0, 0.0), 1.0),
-            ("ding", ("word", 4, {"vi": "giận", "en": "anger"}, 1, 0.0), 0.8),
-            ("ding", ("sent", 5, 1, 0.3), 0.8), ("ding", ("sent", 5, 2, 0.3), 0.8), ("ding", ("sent", 5, 3, 0.3), 0.9),
-            ("pop", ("sent", 6, 2, 0.0), 0.5), ("pop", ("sent", 6, 3, 0.0), 0.5), ("ding", ("sent", 6, 4, 0.0), 0.7),
-            ("rustle", ("sent", 7, 1, 0.0), 0.9), ("shimmer", ("sent", 7, 1, 0.3), 0.8), ("shimmer", ("sent", 7, 2, 0.0), 0.9),
-            ("pop", ("word", 8, {"vi": "bực", "en": "irritation"}, 0, 0.1), 0.8), ("pop", ("word", 8, {"vi": "thèm", "en": "craving"}, 1, 0.1), 0.8),
-            ("pop", ("sent", 8, 4, 0.6), 0.6), ("pop", ("sent", 8, 4, 0.95), 0.6), ("pop", ("sent", 8, 4, 1.3), 0.6),
-            ("riser", ("scene", 9, -0.2), 0.5), ("boom", ("scene", 9, 1.5), 0.5), ("shimmer", ("scene", 9, 1.6), 0.9),
-            ("clank", ("word", 10, {"vi": "tháo", "en": "take"}, 0, 0.0), 0.9),
-            ("shimmer", ("sent", 10, 2, 0.0), 0.9),
-            ("logo", ("sent", 10, 3, -0.3), 0.8),
-            ("shimmer", ("end", 10, -1.5), 0.8),
+            ("scan", ("scene", 0, 0.6), 0.6),
+            ("clank", ("sent", 1, 0, 0.0), 0.6),
+            ("pop", ("sent", 1, 0, 0.2), 0.7), ("pop", ("sent", 1, 1, 0.2), 0.7), ("pop", ("sent", 1, 2, 0.2), 0.7),
+            ("door", ("word", 1, {"vi": "không", "en": "no"}, 0, 0.0), 0.8),
+            ("door", ("word", 1, {"vi": "yên", "en": "seat"}, 1, 0.0), 0.8),
+            ("door", ("sent", 1, 5, 0.0), 0.8),
+            ("clank", ("word", 1, {"vi": "lắp", "en": "put"}, 0, 0.0), 0.9),
+            ("boom", ("word", 2, {"vi": "tên", "en": "label"}, 0, 0.1), 0.6), ("ding", ("word", 2, {"vi": "tên", "en": "label"}, 0, 0.1), 0.8),
+            ("shimmer", ("word", 2, {"vi": "chính", "en": "you"}, 0, 0.0), 0.8),
+            ("pop", ("scene", 3, 0.3), 0.6), ("pop", ("scene", 3, 0.6), 0.6), ("pop", ("scene", 3, 0.9), 0.6),
+            ("whoosh", ("word", 3, {"vi": "soi", "en": "closely"}, 0, 0.0), 0.25), ("shimmer", ("word", 3, {"vi": "soi", "en": "closely"}, 0, 0.3), 0.8),
+            ("ding", ("word", 3, {"vi": "biết", "en": "knowing"}, 0, 0.0), 0.8),
+            ("shimmer", ("word", 4, {"vi": "tóc", "en": "hair"}, 0, 0.0), 0.6),
+            ("shimmer", ("word", 4, {"vi": "suy", "en": "thoughts"}, 0, 0.0), 0.6),
+            ("shimmer", ("word", 4, {"vi": "cảm", "en": "feelings"}, 0, 0.0), 0.6),
+            ("pop", ("sent", 5, 2, 0.0), 0.5), ("pop", ("sent", 5, 3, 0.0), 0.5), ("ding", ("sent", 5, 4, 0.0), 0.7),
+            ("clank", ("word", 6, {"vi": "trói", "en": "trapped"}, 0, -0.1), 0.8), ("shimmer", ("word", 6, {"vi": "trói", "en": "trapped"}, 0, 0.2), 0.7),
+            ("hum", ("word", 7, {"vi": "đặt", "en": "put"}, 0, 0.0), 0.5),
+            ("pop", ("word", 7, {"vi": "cứng", "en": "hard"}, 0, 0.0), 0.7), ("pop", ("word", 7, {"vi": "mát", "en": "cool"}, 0, 0.0), 0.7), ("pop", ("word", 7, {"vi": "nhẵn", "en": "smooth"}, 0, 0.0), 0.7),
+            ("pop", ("word", 8, {"vi": "bốn", "en": "four"}, 0, 0.0), 0.6), ("pop", ("word", 8, {"vi": "bốn", "en": "four"}, 0, 0.3), 0.6), ("pop", ("word", 8, {"vi": "bốn", "en": "four"}, 0, 0.6), 0.6), ("pop", ("word", 8, {"vi": "bốn", "en": "four"}, 0, 0.9), 0.6),
+            ("ding", ("word", 8, {"vi": "dùng", "en": "using"}, 0, 0.0), 1.0),
+            ("logo", ("sent", 8, 3, -0.3), 0.8),
         ],
     },
 }
@@ -87,7 +92,8 @@ def main():
             continue
         cues.append({"t": round(t, 3), "type": typ, "gain": gain})
     tl["sfx"] = cues
-    tl.pop("chimes", None)
+    # v3 audio bed: chimes only at the key reveals
+    tl["chimes"] = [c["t"] for c in cues if c["type"] == "ding"]
     json.dump(tl, open(path, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     print(len(cues), "cues")
 

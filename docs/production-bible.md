@@ -135,7 +135,9 @@ ffmpeg -i out/ep01_vi_work/video.mp4 -i out/ep01_vi_work/mix.wav -c:v copy -c:a 
 ```
 Mỗi tập có một file cảnh riêng `tools/motion/epXX.js`; phần dùng chung nằm ở `tools/motion/engine.js`.
 
-## 12. Quy chuẩn series v4 (áp dụng từ tập 01 bản v4, thay thế các mục trước nếu khác)
+## 12. Quy chuẩn series v4 (ĐÃ HỦY, giữ lại để tham khảo)
+
+> Sau khi xem bản v4, đã quyết định quay về **format v3** (mục 11): màu vàng Classic, tiêu đề Playfair, chuyển cảnh warp, nhạc nền một tông với whoosh và chuông, không có Bản đồ 89 tâm, không kết vòng lặp. Mục "Thử ngay" và câu hỏi bình luận chỉ đưa vào khi hợp với tập. Mã nguồn engine đang ở bản v3. Các phần hạ tầng (bộ nhớ đệm giọng đọc, giọng tiếng Anh, GPU, cài đặt Windows) vẫn dùng được.
 
 ### Hình ảnh
 - **Theme Aurora** (đã chốt): nền tinh vân tím–xanh, nhấn xanh cyan và hồng, tiêu đề Montserrat đậm không chân, caption Montserrat. Theme đổi được bằng tham số `--theme` (`aurora`, `mono`, `classic`) trong `tools/motion/engine.js`, không phải sửa từng cảnh.

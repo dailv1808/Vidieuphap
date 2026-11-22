@@ -74,3 +74,47 @@ export function cittaMap(g, { r = 2.3, size = 0.15, seed = 0 } = {}) {
       o.material.emissiveIntensity = p ? 0.9 : on ? 0.45 : dim; o.scale.setScalar(p ? 1.25 : on ? 1 : 0.8); });
   } };
 }
+
+// A motorbike built from primitives, with an exploded-view control. Used by ep01 (teaser) and ep02.
+export function motorbike({ scale = 0.78, y = -0.7 } = {}) {
+  const bike = new THREE.Group(); bike.scale.setScalar(scale); bike.position.y = y;
+  const paint = new THREE.MeshPhysicalMaterial({ color: 0xa3122a, roughness: .25, metalness: .3, clearcoat: 1, clearcoatRoughness: .05 });
+  const rubber = new THREE.MeshStandardMaterial({ color: 0x15161a, roughness: .7 }), steel = chrome(), dark = new THREE.MeshPhysicalMaterial({ color: 0x2a2d33, metalness: .8, roughness: .35 });
+  const parts = [];
+  const part = (obj, dir, name) => { const p = new THREE.Group(); p.add(obj); p.userData = { dir, name }; bike.add(p); parts.push(p); return p; };
+  const wheel = x => { const w = new THREE.Group(); w.position.x = x;
+    w.add(new THREE.Mesh(new THREE.TorusGeometry(0.72, 0.17, 16, 48), rubber));
+    w.add(new THREE.Mesh(new THREE.TorusGeometry(0.54, 0.035, 8, 48), steel));
+    const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.13, 0.3, 20), steel); hub.rotation.x = Math.PI / 2; w.add(hub);
+    for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; w.add(rod(V(0, 0, 0), V(Math.cos(a) * 0.54, Math.sin(a) * 0.54, 0), 0.012, steel)); }
+    return w; };
+  part(wheel(-1.5), V(-1.6, -0.3, 1.0), 'wheel'); part(wheel(1.6), V(1.6, -0.3, 1.0), 'wheel2');
+  const frame = new THREE.Group(); [[-1.5, 0, -0.3, 0.9], [-0.3, 0.9, 0.9, 1.1], [-0.3, 0.9, 0.2, 0.15], [0.2, 0.15, 0.9, 1.1]].forEach(([a, b, c, d]) => frame.add(rod(V(a, b, 0), V(c, d, 0), 0.06, dark)));
+  part(frame, V(0, 0.1, -1.4), 'frame');
+  const tank = new THREE.Mesh(new THREE.CapsuleGeometry(0.36, 0.95, 8, 20), paint); tank.rotation.z = Math.PI / 2 - 0.12; tank.position.set(0.35, 1.25, 0); tank.scale.z = 0.85; part(tank, V(0.2, 1.7, 0.4), 'tank');
+  const seat = new THREE.Mesh(new RoundedBoxGeometry(1.3, 0.2, 0.52, 3, 0.08), new THREE.MeshPhysicalMaterial({ color: 0x111111, roughness: .5, clearcoat: .4 })); seat.position.set(-0.6, 1.22, 0); part(seat, V(-0.9, 1.5, 0.6), 'seat');
+  const fork = new THREE.Group(); [-0.12, 0.12].forEach(z => fork.add(rod(V(1.6, 0, z), V(1.15, 1.5, z), 0.045, steel))); part(fork, V(1.3, 0.5, -0.8), 'fork');
+  const bar = new THREE.Group(); bar.add(rod(V(1.12, 1.58, -0.6), V(1.12, 1.58, 0.6), 0.035, steel)); [-0.6, 0.6].forEach(z => bar.add(rod(V(1.12, 1.58, z), V(1.12, 1.58, z * 1.25), 0.06, rubber))); part(bar, V(1.0, 1.6, -0.2), 'bar');
+  const lamp = new THREE.Group(); const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.2, 24, 16), new THREE.MeshStandardMaterial({ color: 0xfff1c8, emissive: 0xffe2a0, emissiveIntensity: 2 })); bulb.position.set(1.38, 1.32, 0); lamp.add(bulb);
+  part(lamp, V(2.0, 1.0, 0.7), 'lamp');
+  const eng = new THREE.Mesh(new RoundedBoxGeometry(0.75, 0.6, 0.5, 3, 0.08), dark); eng.position.set(0.25, 0.45, 0); part(eng, V(0, -1.3, 1.2), 'engine');
+  const ex = rod(V(-0.2, 0.32, 0.32), V(-1.6, 0.48, 0.32), 0.075, steel); part(ex, V(-1.1, -1.0, -0.9), 'exhaust');
+  for (let i = 0; i < 10; i++) { const b = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.08, 6), steel); b.position.set(-0.8 + i * 0.2, 0.7, 0); const a = i * 0.7; part(b, V(Math.cos(a) * 2.2, Math.sin(a) * 1.6 + 0.6, Math.sin(a * 2) * 1.2), 'bolt'); }
+  const lines = new THREE.LineSegments(new THREE.BufferGeometry(), new THREE.LineDashedMaterial({ color: 0x7fe3ff, dashSize: 0.08, gapSize: 0.06, transparent: true, opacity: 0.6 })); bike.add(lines);
+  const homes = parts.map(p => new THREE.Box3().setFromObject(p.children[0]).getCenter(V(0, 0, 0)));
+  // k: 0 assembled .. 1 exploded; custom per-part offsets can override the default exploded direction
+  const setExplode = (k, override = null) => {
+    const lp = [];
+    parts.forEach((p, i) => { const d = override?.[i] ?? p.userData.dir, kk = clamp(k * 1.15 - (i % 5) * 0.03);
+      p.position.set(d.x * kk, d.y * kk, d.z * kk); p.rotation.set(d.z * kk * 0.3, d.x * kk * 0.2, d.y * kk * 0.15);
+      const h = homes[i]; lp.push(h.x, h.y, h.z, h.x + d.x * kk, h.y + d.y * kk, h.z + d.z * kk); });
+    lines.geometry.setAttribute('position', new THREE.Float32BufferAttribute(lp, 3)); lines.computeLineDistances(); lines.visible = k > 0.05 && !override; lines.material.opacity = k * 0.6;
+  };
+  return { bike, parts, homes, setExplode, lines, bulb };
+}
+
+// A glowing name tag ("sticker") used for concepts (paññatti).
+export function nameTag(text, { h = 0.5, color = '#ffffff', bg = 'rgba(124,92,255,.85)' } = {}) {
+  const m = textPlane(text, h, { color, weight: 800, bg, radius: 40, pad: 40 });
+  return m;
+}
