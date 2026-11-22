@@ -1,8 +1,42 @@
 {
-  "label": { "vi": "TẬP 02", "en": "EP 02" },
-  "keywords": {
-    "vi": ["chế định", "chân đế", "pan-nhát-ti", "pa-ra-mát-tha", "Pā-li", "Vi Diệu Pháp", "Bên Trong Một Ý Nghĩ", "tám mươi chín", "bản đồ", "chiếc xe"],
-    "en": ["concept", "concepts", "ultimate reality", "pannatti", "paramattha", "Pali", "Abhidhamma", "Inside a Thought", "map"]
+  "label": {
+    "vi": "TẬP 02",
+    "en": "EP 02"
   },
-  "thumb": { "t": 2.5, "big": "", "main": { "vi": "CHIẾC XE BIẾN ĐI ĐÂU?", "en": "WHERE DID THE BIKE GO?" }, "sub": { "vi": "Câu trả lời đúng với cả bạn", "en": "The answer applies to you too" } }
+  "keywords": {
+    "vi": [
+      "chế định",
+      "chân đế",
+      "pan-nhát-ti",
+      "pa-ra-mát-tha",
+      "Pā-li",
+      "Vi Diệu Pháp",
+      "Bên Trong Một Ý Nghĩ",
+      "tám mươi chín",
+      "bản đồ",
+      "chiếc xe"
+    ],
+    "en": [
+      "concept",
+      "concepts",
+      "ultimate reality",
+      "pannatti",
+      "paramattha",
+      "Pali",
+      "Abhidhamma",
+      "Inside a Thought",
+      "map"
+    ]
+  },
+  "thumb": {
+    "t": 2.5,
+    "title": {
+      "vi": "CHIẾC XE *BIẾN ĐI ĐÂU?*",
+      "en": "WHERE DID *THE BIKE GO?*"
+    },
+    "sub": {
+      "vi": "Câu trả lời đúng với cả bạn",
+      "en": "The answer applies to you too"
+    }
+  }
 }

@@ -38,14 +38,11 @@ Step "4/5 Ghep hinh + tieng"
 $outMp4 = "out/${Ep}_${Lang}.mp4"
 ffmpeg -loglevel error -y -i "$work/video.mp4" -i "$work/mix.wav" -c:v copy -c:a aac -b:a 192k -shortest -movflags +faststart $outMp4
 
-Step "5/5 Thumbnail"
+Step "5/5 Thumbnail + dong goi (ten tap)"
 $meta = Get-Content "tools/motion/$Ep.meta.json" -Raw -Encoding UTF8 | ConvertFrom-Json
-if ($meta.thumb) {
-  node tools/motion/render.js --ep $Ep --lang $Lang --tl "$work/timeline.json" --stills "$($meta.thumb.t)" --clean 1 --out "$work/thumb"
-  $still = Get-ChildItem "$work/thumb/*.png" | Select-Object -First 1
-  $tArgs = @("tools/thumbnail.py", $still.FullName, "out/${Ep}_${Lang}_thumb.jpg", "--main", $meta.thumb.main.$Lang, "--ep", $meta.label.$Lang)
-  if ($meta.thumb.big) { $tArgs += @("--big", $meta.thumb.big) }
-  if ($meta.thumb.sub) { $tArgs += @("--sub", $meta.thumb.sub.$Lang) }
-  python @tArgs
-}
-Step "XONG: $repo\$outMp4"
+$num = [int]($Ep -replace '\D', '')
+node tools/motion/render.js --ep $Ep --lang $Lang --tl "$work/timeline.json" --stills "$($meta.thumb.t)" --clean 1 --out "$work/thumb"
+$still = Get-ChildItem "$work/thumb/*.png" | Select-Object -First 1
+python tools/thumbnail.py $still.FullName "out/${Ep}_${Lang}_thumb.jpg" --title $meta.thumb.title.$Lang --sub $meta.thumb.sub.$Lang --ep $num --lang $Lang
+$final = python tools/package_episode.py $Ep $Lang
+Step "XONG: $final"

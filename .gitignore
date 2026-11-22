@@ -3,3 +3,7 @@ __pycache__/
 tools/motion/node_modules/
 out/*.mp4
 out/tts_cache/
+out/export/
+out/thumb_try/
+out/thumbs_src/
+out/*_work/
