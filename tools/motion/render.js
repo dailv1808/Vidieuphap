@@ -38,7 +38,8 @@ async function openPage(browser, port) {
   page.on('pageerror', e => console.error('page error:', e.message));
   page.on('console', m => { if (m.type() === 'error') console.error('console:', m.text()); });
   const q = new URLSearchParams({ theme: args.theme || 'aurora', lang: LANG, clean: args.clean || '', ep: args.ep, tl: '/' + args.tl, series: args.series || 'BÊN TRONG MỘT Ý NGHĨ', label: args.label || 'TẬP 01', kw: args.kw || '[]', scale: args.scale || (USE_GPU ? '1' : '0.75') });
-  await page.goto(`http://localhost:${port}/tools/motion/episode.html?${q}`);
+  if (args.end) q.set('end', args.end);
+  await page.goto(`http://localhost:${port}/${args.page || 'tools/motion/episode.html'}?${q}`);
   await page.waitForFunction('window.ready === true', null, { timeout: 120000 });
   return page;
 }
@@ -60,10 +61,10 @@ async function openPage(browser, port) {
     await b.close(); srv.close(); return;
   }
   const tl = JSON.parse(fs.readFileSync(path.join(ROOT, args.tl)));
-  const total = Math.ceil(tl.duration * FPS), per = Math.ceil(total / WORKERS);
+  const F0 = Math.round((+args.start || 0) * FPS), total = Math.ceil((args.end ? +args.end : tl.duration) * FPS) - F0, per = Math.ceil(total / WORKERS);
   const segs = [], t0 = Date.now();
   await Promise.all([...Array(WORKERS)].map(async (_, w) => {
-    const a = w * per, z = Math.min(total, a + per); if (a >= z) return;
+    const a = F0 + w * per, z = Math.min(F0 + total, a + per); if (a >= z) return;
     const seg = args.out.replace(/\.mp4$/, `_seg${w}.mp4`); segs[w] = seg;
     const ff = spawn(FFMPEG, ['-y', '-f', 'image2pipe', '-framerate', String(FPS), '-c:v', 'mjpeg', '-i', '-', '-c:v', 'libx264', '-preset', 'medium', '-crf', '18', '-pix_fmt', 'yuv420p', seg], { stdio: ['pipe', 'ignore', 'inherit'] });
     const b = await launch(), page = await openPage(b, port), cdp = await page.context().newCDPSession(page);
