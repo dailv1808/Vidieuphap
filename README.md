@@ -1,4 +1,4 @@
-# Soi Tâm 3 Phút · Inside a Thought
+# Bên Trong Một Ý Nghĩ · Inside a Thought
 
 Series video ngắn (Facebook Reels, YouTube Shorts, TikTok) giới thiệu **Vi Diệu Pháp (Abhidhamma)** cho người chưa từng biết Phật pháp. Có hai phiên bản: **tiếng Việt** và **tiếng Anh**.
 

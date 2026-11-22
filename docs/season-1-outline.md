@@ -5,7 +5,7 @@ Mục tiêu mùa 1: người xem hiểu Vi Diệu Pháp là gì, bốn pháp ch�
 | Tập | Tiêu đề (VI) | Title (EN) | Khái niệm chính | Tình huống đời thường |
 |---|---|---|---|---|
 | 01 | Cuốn sách hướng dẫn sử dụng cái tâm | The user manual for your mind | Vi Diệu Pháp (Abhidhamma), Tam Tạng | Mua điện thoại mới có sách hướng dẫn, còn cái tâm thì không |
-| 02 | Cái bàn có thật không? | Is your table real? | Chế định (paññatti) và Chân đế (paramattha) | Tháo rời một chiếc xe máy |
+| 02 | Chiếc xe biến đi đâu? | Is your table real? | Chế định (paññatti) và Chân đế (paramattha) | Tháo rời một chiếc xe máy |
 | 03 | Bốn thứ "thật" nhất | The four ultimate realities | Tâm, Tâm sở, Sắc, Niết Bàn | Món phở: nước, gia vị, bát, và lúc no đủ không còn thèm |
 | 04 | Tâm là gì? | What is the mind? | Citta: thực tính biết cảnh; sinh diệt liên tục | Phim chiếu 24 hình mỗi giây |
 | 05 | Gia vị của tâm | The flavors of the mind | 52 tâm sở, 4 đặc tính đồng sinh, đồng diệt, đồng cảnh, đồng y | Ly nước pha màu |

@@ -118,7 +118,9 @@ def main():
     # duck under voice
     env = np.abs(voice)
     win = int(0.25 * SR)
-    env = np.convolve(env, np.ones(win) / win, mode="same")
+    cs = np.cumsum(np.concatenate([[0.0], env]))
+    env = (cs[win:] - cs[:-win]) / win
+    env = np.concatenate([np.full(win // 2, env[0]), env, np.full(len(voice) - len(env) - win // 2, env[-1])])
     env = env / (env.max() + 1e-9)
     duck = 1 - 0.55 * np.clip(env * 4, 0, 1)
     fade = np.clip(np.arange(len(music)) / (1.5 * SR), 0, 1) * np.clip((len(music) - np.arange(len(music))) / (2.5 * SR), 0, 1)

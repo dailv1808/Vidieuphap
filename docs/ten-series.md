@@ -2,7 +2,9 @@
 
 ## Tiếng Anh: đã chốt **Inside a Thought**
 
-## Tiếng Việt: chờ chọn
+## Tiếng Việt: đã chốt **Bên Trong Một Ý Nghĩ**
+
+Các phương án đã cân nhắc:
 
 Tiêu chí: ngắn, đọc lên là hiểu, gợi tò mò về *chính tâm mình*, không nghe như sách giáo khoa. Từ "Vi Diệu Pháp" vẫn nằm trong mô tả và hashtag để người tìm kiếm vẫn thấy.
 
