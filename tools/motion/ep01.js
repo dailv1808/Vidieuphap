@@ -408,7 +408,14 @@ export const scenes = [
     for (let i = 0; i < n; i++) { const j = i % 89, a = j * 2.39996, rr = 0.9 + Math.sqrt(j / 89) * 2.6;
       const p = V(Math.cos(a) * rr, 0.5 + Math.sin(j * 1.7) * 0.35, Math.sin(a) * rr).applyAxisAngle(V(1, 0, 0), 0.35);
       G[i * 3] = p.x + (r() - .5) * 0.07; G[i * 3 + 1] = p.y + (r() - .5) * 0.07; G[i * 3 + 2] = p.z + (r() - .5) * 0.07; tmp.set(list[j].color); cols.set([tmp.r, tmp.g, tmp.b], i * 3); }
-    const C2 = new Float32Array(n * 3); pg.setAttribute('color', new THREE.BufferAttribute(C2, 3)); pts.material.vertexColors = true; pts.material.color.set(0xffffff);
+    const C2 = new Float32Array(n * 3); pg.setAttribute('color', new THREE.BufferAttribute(C2, 3)); pts.material.vertexColors = true; pts.material.color.set(0xffffff); pts.material.needsUpdate = true;
+    // the real opening frame (book + 89 orbs) fades back in so the last frame matches the first
+    const loopGrp = new THREE.Group(); g.add(loopGrp);
+    const lbook = palmBook(12, 3); lbook.g.scale.setScalar(0.68); lbook.g.position.set(0, -1.0, 0); loopGrp.add(lbook.g);
+    lbook.leaves.forEach((p, i) => { const k = (i - 5.5) / 6; p.rotation.z = k * 0.5; p.position.y = i * 0.045 + i * 0.08; });
+    lbook.top.position.y = 12 * 0.045 + 0.51; lbook.top.rotation.z = 0.3;
+    const lgeo = new THREE.SphereGeometry(0.12, 24, 16);
+    const lorbs = list.map((c, j) => { const o = new THREE.Mesh(lgeo, orbMaterial(c.color, 0.35)); o.scale.setScalar(1.2); loopGrp.add(o); return o; });
     return { update(t, d, e) {
       e.setNebula(0x061018, 0x12304a, 0x2a5a6a, 0.55);
       const ex = easeInOut((t - tEx) / 2.2), morph = easeInOut((t - tM + 0.3) / 2.2);
@@ -424,7 +431,11 @@ export const scenes = [
       for (let i = 0; i < n * 3; i += 3) { const w = Math.sin(Math.PI * morph) * 0.6 + Math.sin(Math.PI * loop) * 0.5;
         P[i] = lerp(lerp(A[i], B[i], morph), G[i], loop) + Math.sin(i + t * 2) * w; P[i + 1] = lerp(lerp(A[i + 1], B[i + 1] - 0.2, morph), G[i + 1], loop) + Math.cos(i * 0.7 + t) * w; P[i + 2] = lerp(lerp(A[i + 2], B[i + 2], morph), G[i + 2], loop);
         C2[i] = lerp(white.r, cols[i], loop); C2[i + 1] = lerp(white.g, cols[i + 1], loop); C2[i + 2] = lerp(white.b, cols[i + 2], loop); }
-      pg.attributes.position.needsUpdate = true; pg.attributes.color.needsUpdate = true; pts.material.size = 0.075 + loop * 0.11;
+      pg.attributes.position.needsUpdate = true; pg.attributes.color.needsUpdate = true; pts.material.size = 0.075;
+      const back = smooth(d - 0.8, d - 0.15, t); pts.material.opacity = 1 - back; loopGrp.visible = back > 0.001;
+      const T0 = 0; lbook.g.rotation.set(0.3, -0.5 + T0 * 0.12, 0); lbook.g.scale.setScalar(0.68 * Math.max(0.001, back));
+      lorbs.forEach((o, j) => { const a = j * 2.39996, rr = 0.9 + Math.sqrt(j / 89) * 2.6;
+        o.position.copy(V(Math.cos(a) * rr, 0.5 + Math.sin(j * 1.7) * 0.35, Math.sin(a) * rr).applyAxisAngle(V(0, 1, 0), T0 * 0.22).applyAxisAngle(V(1, 0, 0), 0.35)); o.scale.setScalar(1.2 * Math.max(0.001, back)); });
       ped.visible = pring.visible = morph < 0.6; pring.material.opacity = 1 - morph;
       { const loop = easeInOut((t - (d - 1.5)) / 1.3); const p = V(Math.sin(t * 0.15) * 1.5, 1.4 - ex * 0.4, 11.5 + ex * 1.2).lerp(V(0, 1.6, 6.5), loop);
         camTo(e, p, V(0, -0.3, 0).lerp(V(0, 0, 0), loop)); }
