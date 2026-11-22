@@ -105,3 +105,32 @@ Trước khi đăng mỗi tập:
 - 3 tập mỗi tuần (Thứ Hai, Tư, Sáu), 19:30–21:00.
 - Mỗi tập đăng cùng ngày trên cả ba nền tảng. Bản tiếng Anh đăng trên kênh riêng hoặc lệch 1 ngày.
 - Ghim bình luận đầu tiên: câu hỏi của tập để kéo tương tác.
+
+## 11. Quy trình dựng v2: motion graphics 3D (từ tập 01 v2)
+
+Thay thế mục 4 (tranh minh họa) và mục 8 (dựng bằng ảnh tĩnh). Mỗi cảnh là một cảnh 3D dựng bằng three.js, render từng khung hình bằng Chromium không giao diện.
+
+**Ngôn ngữ hình ảnh**
+- Nền đêm xanh thẫm có sương, bụi sáng trôi, bloom nhẹ; ánh sáng chính màu vàng nghệ ấm, viền xanh lạnh.
+- Mỗi nhóm tâm có màu cố định, dùng xuyên suốt cả mùa (quả cầu tâm): tham cam, sân đỏ, si xám, vô nhân xanh lam nhạt, tịnh hảo vàng, sắc giới tím, vô sắc ngà, siêu thế trắng vàng.
+- Camera luôn chuyển động: trôi nhẹ như cầm tay, đẩy vào khi bắt đầu cảnh, lướt giữa các vật thể theo từng câu.
+- Chuyển cảnh: vệt sáng quét chéo kèm âm "whoosh".
+- Thanh tiến độ 10 đoạn ở trên cùng giúp người xem biết còn bao lâu (tăng tỉ lệ xem hết).
+- Caption hiện từng từ: từ đang đọc màu vàng và nảy nhẹ; thuật ngữ màu hồng sen; từ sắp đọc mờ.
+- Tiêu đề cảnh (Chữ) hiện từng từ, mờ dần vào.
+- Thẻ kính mờ cho phần "Thuật ngữ chuẩn": tên Việt, Pāli, nghĩa, sơ đồ.
+
+**Âm thanh**: nhạc nền ambient tự tổng hợp (hợp âm Dmaj9, Bm7, Gmaj7, A6sus và chuông ngũ cung), tự hạ âm lượng khi có giọng đọc; âm "whoosh" khi chuyển cảnh; tiếng chuông ở các mốc hé lộ. Toàn bộ được tạo bằng code, không lo bản quyền.
+
+**Lệnh dựng một tập**
+```bash
+# 1. Giọng đọc theo từng câu + mốc thời gian từng từ (VieNeu, giọng Thiền Tâm Đức)
+python tools/tts_timeline.py scripts/vi/ep01.md out/ep01_vi_work
+# 2. Hình 3D (khoảng 8 phút cho 2:46 với 4 luồng)
+node tools/motion/render.js --ep ep01 --tl out/ep01_vi_work/timeline.json --out out/ep01_vi_work/video.mp4 --workers 4 --series "TÊN SERIES" --kw '[...thuật ngữ tô màu...]'
+# 3. Nhạc nền + hiệu ứng, trộn với giọng
+python tools/audio_bed.py out/ep01_vi_work
+# 4. Ghép
+ffmpeg -i out/ep01_vi_work/video.mp4 -i out/ep01_vi_work/mix.wav -c:v copy -c:a aac -b:a 192k -shortest out/ep01_vi.mp4
+```
+Mỗi tập có một file cảnh riêng `tools/motion/epXX.js`; phần dùng chung nằm ở `tools/motion/engine.js`.

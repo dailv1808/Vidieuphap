@@ -1,0 +1,22 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>episode</title>
+<script type="importmap">{"imports":{"three":"/tools/motion/node_modules/three/build/three.module.js","three/addons/":"/tools/motion/node_modules/three/examples/jsm/"}}</script>
+</head><body><canvas id="c"></canvas><div id="ov"></div>
+<script type="module">
+import { Engine, Overlay, CSS } from './engine.js';
+const q = new URLSearchParams(location.search);
+const ep = await import(`./${q.get('ep')}.js`);
+const tl = await (await fetch(q.get('tl'))).json();
+const style = document.createElement('style'); style.textContent = CSS + (ep.CSS_EP || ''); document.head.appendChild(style);
+await Promise.all([500, 600, 800, 900].map(w => document.fonts.load(`${w} 40px "Be Vietnam Pro"`)));
+const cfg = { series: q.get('series') || 'TÊN SERIES', epLabel: q.get('label') || 'TẬP 01', keywords: JSON.parse(q.get('kw') || '[]'),
+  renderScale: +(q.get('scale') || 0.75), overlay: ep.overlay, hideHeadline: ep.hideHeadline };
+const engine = new Engine(document.getElementById('c'), tl, cfg);
+ep.scenes.forEach(s => engine.add(s));
+const ov = new Overlay(document.getElementById('ov'), tl, cfg);
+window.renderAt = t => { const info = engine.render(t); ov.render(t, info, engine); };
+window.duration = tl.duration;
+window.renderAt(0);
+if (q.get('clean')) document.getElementById('ov').style.display = 'none';
+window.ready = true;
+</script></body></html>
