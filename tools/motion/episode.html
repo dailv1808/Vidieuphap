@@ -5,7 +5,7 @@
 <script type="module">
 import { Engine, Overlay, CSS, setTheme } from './engine.js';
 const q = new URLSearchParams(location.search);
-setTheme(q.get('theme') || 'classic');
+setTheme(q.get('theme') || 'aurora');
 const ep = await import(`./${q.get('ep')}.js`);
 const tl = await (await fetch(q.get('tl'))).json();
 const style = document.createElement('style'); style.textContent = CSS + (ep.CSS_EP || ''); document.head.appendChild(style);

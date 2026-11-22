@@ -134,3 +134,51 @@ python tools/audio_bed.py out/ep01_vi_work
 ffmpeg -i out/ep01_vi_work/video.mp4 -i out/ep01_vi_work/mix.wav -c:v copy -c:a aac -b:a 192k -shortest out/ep01_vi.mp4
 ```
 Mỗi tập có một file cảnh riêng `tools/motion/epXX.js`; phần dùng chung nằm ở `tools/motion/engine.js`.
+
+## 12. Quy chuẩn series v4 (áp dụng từ tập 01 bản v4, thay thế các mục trước nếu khác)
+
+### Hình ảnh
+- **Theme Aurora** (đã chốt): nền tinh vân tím–xanh, nhấn xanh cyan và hồng, tiêu đề Montserrat đậm không chân, caption Montserrat. Theme đổi được bằng tham số `--theme` (`aurora`, `mono`, `classic`) trong `tools/motion/engine.js`, không phải sửa từng cảnh.
+- **Bố cục**: vật thể 3D chỉ nằm ở dải giữa, giữa tiêu đề (14–25% chiều cao) và caption (76–84%).
+- **Chuyển cảnh có logic**: mỗi chỗ chuyển cảnh chọn một kiểu theo nội dung, khai báo trong mảng `transitions` của file tập:
+  - `zoom` (lao vào một điểm, cảnh mới hiện ra từ điểm đó): khi ý sau nằm "bên trong" ý trước.
+  - `light` (ánh sáng lan tràn): khi có nguồn sáng trong cảnh.
+  - `whip` (lia ngang): chuyển sang một ý ngang hàng.
+  - `dissolve` (tan hạt): khi một hình biến thành hình khác.
+
+  Hai cảnh được render cùng lúc và hòa vào nhau trong 0,9 giây.
+- **Hook 2 giây đầu**: khung đầu tiên đã có chuyển động mạnh, tiêu đề hiện ngay (không chờ hiệu ứng), câu hỏi hoặc con số gây tò mò.
+- **Kết vòng lặp**: giây cuối của tập chuyển về đúng hình ảnh khung đầu (thiên hà quả cầu), để người xem lặp lại liền mạch.
+
+### Bản đồ 89 tâm (phân đoạn bắt buộc mỗi tập)
+- Cảnh ngắn trước teaser: khối cầu 89 quả cầu theo 8 nhóm màu cố định. Những nhóm tâm đã học sáng lên, nhóm đang học nhấp nháy, kèm bộ đếm "X / 89".
+- Tập 01: 0/89 (giới thiệu bản đồ). Từ tập 07 (tâm tham) bắt đầu thắp sáng: tập 7 +8, tập 8 +2, tập 9 +2, tập 10 +18, tập 11 +24, tập 12 +35, đủ 89 tâm.
+- Thành phần dùng lại: `cittaMap()` trong `tools/motion/lib.js`.
+
+### Âm thanh
+- **Nhạc hiệu**: 3 nốt chuông đi lên (A5, D6, F#6) ở giây đầu và lúc hiện thẻ tập sau.
+- **Hiệu ứng theo cảnh**: sấm, rung điện thoại, cửa tủ lạnh, lá buông, tiếng nổ trầm, quét X-quang, kim loại, lấp lánh… gắn vào đúng từ hoặc câu trong lời đọc. Khai báo trong `tools/cues.py`.
+- **Nhạc nền theo cảm xúc** từng cảnh: `wonder`, `mystic`, `tense`, `warm`, chuyển mượt giữa các cảnh và tự nhỏ lại khi có giọng đọc.
+- Toàn bộ âm thanh được tổng hợp bằng code, không dùng file ngoài.
+
+### Cấu trúc tập
+- Cố định: hook (con số hoặc nghịch lý), chuỗi tình huống đời thường, thẻ "Thuật ngữ chuẩn", Bản đồ 89 tâm, teaser tập sau với câu gợi tò mò.
+- Tùy tập (chỉ đưa vào khi phù hợp): mục "Soi ngay" (bài tập ngắn), câu hỏi kêu gọi bình luận.
+- Mỗi tập chỉ có **một phiên bản đầy đủ** (khoảng 3 phút).
+
+### Quy trình làm một tập
+```bash
+python tools/tts_timeline.py scripts/vi/epXX.md out/epXX_vi_work        # giọng đọc + mốc thời gian (có bộ nhớ đệm)
+python tools/cues.py epXX out/epXX_vi_work vi                            # hiệu ứng âm thanh + cảm xúc nhạc
+python tools/audio_bed.py out/epXX_vi_work                               # nhạc nền + trộn
+node tools/motion/render.js --ep epXX --tl out/epXX_vi_work/timeline.json --out out/epXX_vi_work/video.mp4 --workers 4 --kw '[...]'
+ffmpeg -i out/epXX_vi_work/video.mp4 -i out/epXX_vi_work/mix.wav -c:v copy -c:a aac -b:a 192k -shortest out/epXX_vi.mp4
+node tools/motion/render.js --ep epXX --tl ... --stills <giây> --clean 1 --out out/epXX_vi_work/thumb
+python tools/thumbnail.py out/epXX_vi_work/thumb/*.png out/epXX_vi_thumb.jpg --main "..." --sub "..." --ep "TẬP XX"
+```
+- **Bản tiếng Anh dùng lại toàn bộ hình**: chữ trong cảnh 3D nằm ở bảng `STR` (vi/en) của mỗi file tập. Chạy với `--lang en`, kịch bản `scripts/en/`, giọng Kokoro (`KOKORO_DIR`, `EN_VOICE=am_michael`).
+- **Làm theo lô**: viết kịch bản 3 tập, duyệt một lần, rồi render cả lô.
+
+### Đăng bài
+- **Tiêu đề và bìa**: con số hoặc nghịch lý + câu hỏi về chính người xem (ví dụ "89 loại tâm · Bạn đang ở loại nào?"). Bìa luôn có tên series và số tập ở cùng vị trí.
+- **Lịch**: 2–3 tập mỗi tuần, cùng khung giờ (19:30–21:00). Tạo playlist "Mùa 1: Bản đồ của Tâm" trên YouTube và Facebook.

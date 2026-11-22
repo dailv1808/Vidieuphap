@@ -27,7 +27,7 @@ async function openPage(browser, port) {
   const page = await browser.newPage({ viewport: { width: 1080, height: 1920 } });
   page.on('pageerror', e => console.error('page error:', e.message));
   page.on('console', m => { if (m.type() === 'error') console.error('console:', m.text()); });
-  const q = new URLSearchParams({ theme: args.theme || 'classic', lang: args.lang || 'vi', clean: args.clean || '', ep: args.ep, tl: '/' + args.tl, series: args.series || 'BÊN TRONG MỘT Ý NGHĨ', label: args.label || 'TẬP 01', kw: args.kw || '[]', scale: args.scale || '0.75' });
+  const q = new URLSearchParams({ theme: args.theme || 'aurora', lang: args.lang || 'vi', clean: args.clean || '', ep: args.ep, tl: '/' + args.tl, series: args.series || 'BÊN TRONG MỘT Ý NGHĨ', label: args.label || 'TẬP 01', kw: args.kw || '[]', scale: args.scale || '0.75' });
   await page.goto(`http://localhost:${port}/tools/motion/episode.html?${q}`);
   await page.waitForFunction('window.ready === true', null, { timeout: 120000 });
   return page;
